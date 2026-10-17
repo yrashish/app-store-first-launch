@@ -1,0 +1,22 @@
+[
+ {"query": "ok my flutter app works on my iphone through xcode, how do i actually get it on the app store? never done this before, i have the $99 account", "should_trigger": true},
+ {"query": "where are we with the app store submission for this repo? did we ever register the bundle id or upload anything to testflight", "should_trigger": true},
+ {"query": "app store connect is open in chrome, can you fill in the new app form for me — name is PocketPlanner, subtitle 'Plan your week in minutes, stress free'", "should_trigger": true},
+ {"query": "im on the age rating questionnaire for my toddler shapes app, should I choose Made for Kids or not applicable? might add ads later", "should_trigger": true},
+ {"query": "the App Privacy section is asking whether we collect data. our app uses supabase for auth and stores notes there. what do i answer", "should_trigger": true},
+ {"query": "I need a privacy policy URL for app store connect, app doesnt collect anything. can you write one and host it somewhere free", "should_trigger": true},
+ {"query": "tauri v2 app, want to ship the mac version on the Mac App Store. what do I need for signing and sandbox and how do I upload it", "should_trigger": true},
+ {"query": "should I charge for my first iOS app from day one or launch free and add a subscription later? it's a meditation timer", "should_trigger": true},
+ {"query": "help me get my expo react native app onto testflight so my friends can try it, I've never published an app", "should_trigger": true},
+ {"query": "what's the checklist before I hit submit for review on my first ios app? scared of getting rejected", "should_trigger": true},
+ {"query": "how do I publish my android app on google play console, first time, need the aab signing steps", "should_trigger": false},
+ {"query": "write StoreKit 2 code for a monthly subscription paywall in SwiftUI with restore purchases", "should_trigger": false},
+ {"query": "xcode build fails with 'Command PhaseScriptExecution failed with a nonzero exit code' on my react native project, help", "should_trigger": false},
+ {"query": "design 5 app store screenshots for my recipe app with captions, iphone 6.9 inch, make them look premium", "should_trigger": false},
+ {"query": "do keyword research for my habit tracker app store listing, which keywords have low competition", "should_trigger": false},
+ {"query": "write a GDPR privacy policy for my saas website that uses stripe and google analytics", "should_trigger": false},
+ {"query": "set up fastlane match and a github actions workflow that uploads every main build to testflight automatically", "should_trigger": false},
+ {"query": "my testflight build crashes on launch on iOS 18, here's the crash log, what's wrong", "should_trigger": false},
+ {"query": "apple rejected my app update under guideline 4.3 spam, help me write a reply in resolution center", "should_trigger": false},
+ {"query": "how do I add push notifications to my swiftui app with APNs and a node backend", "should_trigger": false}
+]

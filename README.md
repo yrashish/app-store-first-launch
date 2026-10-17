@@ -64,7 +64,16 @@ app-store-first-launch/
 │   └── privacy-policy.md         policy outline and GitHub Pages hosting
 └── scripts/
     └── check_readiness.sh        read-only readiness check, run from the project root
+evals/
+└── trigger-evals.json            requests used to test when the skill loads
 ```
+
+## Trigger tests
+
+`evals/trigger-evals.json` has 20 sample requests: 10 that should load the skill and 10 near-misses
+(Google Play, StoreKit code, fastlane, crash logs, rejection replies, screenshot design) that
+should not. With Claude Opus 5.5 in Claude Code, three runs per request, the current description
+loads the skill for all 10 positives and none of the 10 negatives.
 
 ## Caveats
 
