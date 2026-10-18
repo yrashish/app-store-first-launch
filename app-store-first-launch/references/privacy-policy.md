@@ -11,10 +11,10 @@ assuming. Keep these sections:
 1. **Who makes the app**: the developer's name and contact email.
 2. **What we collect**: if nothing leaves the device, say so plainly. Name what's absent: no
    accounts, ads, analytics, tracking or servers.
-3. **What stays on the device**: list what's stored locally (profiles, progress, settings,
-   recordings) and say it never leaves the device.
-4. **Third parties**: Apple services the app uses (for example, Apple's speech recognition may
-   send audio to Apple on some devices), and any SDKs.
+3. **What stays on the device**: list what the app stores locally (for example settings, saved
+   documents, history or cached account data) and whether any of it leaves the device.
+4. **Third parties**: each SDK and outside service that receives data, including Apple services
+   that send data to Apple (for example iCloud sync or server-based speech recognition).
 5. **Deleting data**: how to delete data in the app, and that deleting the app deletes everything.
 6. **Children's privacy** (if relevant): COPPA, GDPR-K and the UK Age Appropriate Design Code.
    If nothing is collected, say there's nothing to disclose. Only claim to follow the Kids
@@ -51,6 +51,6 @@ The site goes live at `https://<owner>.github.io/<app-slug>/privacy/` within abo
 minutes. Check that it's live with `curl -s -o /dev/null -w '%{http_code}'` (expect 200) before
 pasting the URL into App Store Connect, because Apple may check the link.
 
-Keep the HTML simple: one column, readable on a phone, and a dark-mode colour scheme. Convert the
-Markdown policy so the two stay the same, and put the published URL in the repo's `PRIVACY.md` so
-whoever edits it next knows to update both.
+Keep the HTML simple: one column, readable on a phone. If the repo keeps its own copy of the
+policy, generate the page from it and note the published URL in that file, so whoever edits it
+next knows to update both.

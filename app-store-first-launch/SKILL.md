@@ -1,81 +1,107 @@
 ---
 name: app-store-first-launch
-description: Guide a developer, especially a first-timer, through getting an app onto Apple's App Store and TestFlight with App Store Connect. Covers checking launch readiness, registering the bundle ID, creating the app record, name and subtitle limits, category, the age rating questionnaire and the Made for Kids decision, App Privacy labels, writing and hosting a privacy policy, signing, uploading a build, and when to start charging. Use this whenever someone asks "where are we with the App Store launch", wants to publish, submit or ship an iOS, iPadOS or macOS app, mentions App Store Connect, TestFlight, a bundle ID, provisioning, an age rating, privacy nutrition labels or the Kids category, or is filling in App Store forms in a browser, even if they never say "first time". Not for fastlane or CI upload automation, crash debugging, StoreKit or other feature code, replying to a rejection, or Google Play.
+description: Guide a developer through getting any app onto Apple's App Store or TestFlight with App Store Connect, from a first-ever launch to a new app or platform from an experienced team, and through later version updates. Works out which rules apply to the app (accounts and backends, subscriptions, games, children, user-generated content, AI features, regulated fields like health or finance) and to the stack (Xcode, Flutter, React Native/Expo, Capacitor, Tauri, Unity, Electron). Covers readiness checks, bundle ID, the app record, listing limits, age rating and Made for Kids, App Privacy labels, privacy policy hosting, signing, upload, review, phased release and when to charge. Use it whenever someone wants to publish, submit, ship or update an iOS, iPadOS or macOS app, asks where their App Store launch stands, or is filling in App Store Connect. Not for fastlane or CI automation, crash debugging, StoreKit or feature code, replying to a rejection, or Google Play.
 ---
 
-# First App Store launch
+# App Store launch
 
-This skill walks someone through publishing an app to Apple's App Store. Many people doing this
-for the first time get lost because Apple splits the work across three websites and a build tool,
-and some choices can't be undone. Your job is to know the order, check what is already done, and
-explain each choice before the user makes it.
+This skill takes someone from "the app runs" to "the app is on the App Store", and through later
+updates. The work is spread across developer.apple.com, App Store Connect, a privacy policy host
+and the build tools. Which rules apply depends on what the app does and how it's built, and some
+choices can't be undone. Your job is to know the order, find out what applies to this app, check
+what is already done, and explain each choice before the user makes it.
 
 ## How to work with the user
 
 - **Check the current state first, then report.** Run `scripts/check_readiness.sh` from this
-  skill's folder in the project root. Read any launch notes in the repo (`docs/app-store.md`,
-  `PRIVACY.md`, `README`). Report what is done, what is blocked, and who has to do each step.
-- **Explain in plain words.** Define terms like bundle ID, provisioning profile and SKU the first
-  time they come up. Say which website a step happens on.
+  skill's folder with the project root as the working directory. Read any launch notes in the repo
+  (`docs/app-store*.md`, `PRIVACY.md`, `README`). Report what is done, what is blocked, and who has
+  to do each step.
+- **Match the user's experience.** A first-timer needs terms defined (bundle ID, provisioning
+  profile, SKU) and the website named for each step. Someone who has shipped before only needs the
+  parts that differ for this app. Ask if you can't tell.
 - **Stop before anything irreversible.** Before such a step, explain what gets locked in and ask
-  for a clear yes. The list is in the next section. Clicking Save or Create in Apple's forms counts
-  as submitting a form, so confirm the values first.
+  for a clear yes. The list is in "Choices that are hard or impossible to undo". Clicking Save or
+  Create in Apple's forms counts as submitting a form, so confirm the values first.
 - **Some steps only the user can do.** These are enrolling in the Developer Program, accepting
   Apple's agreements, entering bank and tax details, and anything that needs their Apple ID
   password. Tell them exactly where to click and wait.
-- **Recommend one option and give the reason.** First-timers usually want a recommendation, not a
-  list of choices.
-- **Check limits before you type.** The name and subtitle are 30 characters each. Count before
-  entering. If the user's text is too long, offer a version that fits.
+- **Recommend one option and give the reason.** Most people want a recommendation, not a list.
+- **Check limits before you type.** The name and subtitle are 30 characters each, keywords are
+  100, and promotional text is 170. Count before entering. If the text is too long, offer a version
+  that fits.
+- **Trust the screen over these notes.** Apple changes forms and guidelines. Prices, limits,
+  screenshot sizes and guideline numbers here were checked in October 2026. If a page or a current
+  guideline disagrees with this skill, follow Apple and tell the user.
+
+## Step 1: Profile the app
+
+Before giving advice, work out the following. Infer what you can from the repo and the
+conversation, and ask only about what's left.
+
+| Question | Why it matters |
+|---|---|
+| Platforms: iOS, iPadOS, macOS, or several? | Changes signing, screenshots and sandboxing. One record and bundle ID can cover iOS and macOS. |
+| Stack | Changes where the bundle ID and team are set, and how to build and upload. See `references/stacks.md`. |
+| First app on this account, first release of this app, or an update? | An update skips most of the setup (see "Releasing an update"). |
+| Individual or organisation account? | The seller name shown on the store. Apps in regulated fields need an organisation account. |
+| How will it be distributed? | Public App Store (the default), unlisted, private to one business (Custom Apps through Apple Business Manager), or TestFlight only. |
+| What the app does | Accounts or a backend, payments, ads or analytics, children as the audience, user-generated content, AI features, a game, a health, finance, gambling or VPN app, or a thin wrapper around a website. Each adds rules, listed in `references/app-types.md`. |
+
+Then read the matching sections of `references/app-types.md` before Phase 0.
 
 ## Choices that are hard or impossible to undo
 
 | Choice | Where | Why it matters |
 |---|---|---|
 | Bundle ID | developer.apple.com → Identifiers | Permanent for the app. Use one ID for iOS and macOS if you want Universal Purchase. It doesn't have to match the display name. |
-| SKU | New App form | Internal only. It can't be changed later. Any short slug works. |
-| Made for Kids | Age rating questionnaire, step 7 | Apple's dialog says it can't be changed later. Once approved, every update must follow the Kids rules: no third-party ads or analytics, and links out and purchases behind a parental gate. The only way out is a new app record. Recommend "Not Applicable" unless the user has decided to commit, because you can opt in later but can't opt out. |
-| Kids age band | Same place | Only one band: 5 and under, 6–8, or 9–11. "5–11" is not an option. |
-| App name | New App form | Creating the record reserves the name. Names must be unique across the App Store. |
-| Primary language | New App form | Can be changed later, but it sets the default listing. |
-| Free → paid upfront | Pricing | Turning a free app into a paid one annoys existing users. Adding subscriptions or in-app purchases to a free app is normal. |
-| Publishing App Privacy | App Privacy → Publish | Becomes the public "nutrition label". Make sure the answers match what the app actually does. |
+| SKU | New App form | Internal and can't be changed later. Any short slug works. |
+| Account type for the seller name | Developer Program enrolment | Moving an app from an individual to an organisation account later means an app transfer. |
+| Made for Kids | Age rating questionnaire, last step | Apple's dialog says it can't be changed later. Once approved, every update must follow the Kids rules: no third-party ads or analytics, and links out and purchases behind a parental gate. The only way out is a new app record. Recommend "Not Applicable" unless the user has decided to commit: you can opt in later but can't opt out. |
+| Kids age band | Same place | Only one band: 5 and under, 6–8, or 9–11. |
+| App name | New App form | Creating the record reserves the name. Names must be unique on the App Store. |
+| Free → paid upfront | Pricing | Turning a free app into a paid download annoys existing users. Adding subscriptions or in-app purchases to a free app is normal. |
+| Publishing App Privacy | App Privacy → Publish | Becomes the public "nutrition label". The answers must match what the app actually does. |
 | Public privacy policy page | GitHub Pages or other hosting | Publishes the developer's name and email. Confirm before creating a public repo or page. |
+| Releasing a version | Version page → Release | Users download it right away (or over 7 days with phased release). You can't take a version back, only ship a new one. |
 
 ## The launch order
 
-Each phase lists what to check, what to do, and the usual mistakes. For field-by-field details of
-the App Store Connect screens, read `references/app-store-connect.md` when you reach phase 3.
+Each phase lists what to check and do. For field-by-field notes on App Store Connect, read
+`references/app-store-connect.md` when you reach phase 3.
 
 ### Phase 0: Is the app ready for review?
 
-Check the code before any forms. Apple rejects apps for these more often than for paperwork:
+Check the code before any forms. Apple rejects apps for these more often than for paperwork.
 
-- No debug or developer features in the store build. That means test endpoints, API keys, log
-  uploads and "record samples" tools.
-- The app makes no network calls the privacy answers don't declare. Look for web fonts
-  (Google Fonts), analytics SDKs and crash reporters.
-- Usage descriptions (`NS...UsageDescription`) for every permission the app asks for.
-- `ITSAppUsesNonExemptEncryption = false` in Info.plist if the app only uses Apple's built-in
-  encryption. This skips the export-compliance question on every upload.
-- A privacy manifest (`PrivacyInfo.xcprivacy`) that declares required-reason APIs.
-- For a children's app, a parental gate in front of settings, purchases and links out.
-- If users can create an account, they must also be able to delete it from inside the app
-  (guideline 5.1.1(v)). This is a very common rejection.
-- If the app offers Google, Facebook or another third-party sign-in, it usually also needs Sign in
-  with Apple (guideline 4.8).
-- If the app has a login, prepare a demo account with sample data for the review notes.
-- If data leaves the device (a backend, Firebase, analytics), the App Privacy answers must list
-  each data type and its purpose. "Data Not Collected" is only for apps where nothing leaves the
-  device.
+These apply to every app:
+
+- No debug or developer features in the store build: test endpoints, hard-coded keys, debug menus,
+  log uploads.
+- No placeholder content, broken links or "coming soon" screens.
+- Every network call the app makes is either declared in the privacy answers or doesn't collect
+  data. Look for analytics SDKs, crash reporters, ad SDKs and web fonts.
+- A usage description (`NS...UsageDescription`) for every permission the app requests, saying why.
+- `ITSAppUsesNonExemptEncryption = false` in Info.plist if the app only uses standard encryption
+  such as HTTPS or Apple's APIs. This skips the export-compliance question on every upload.
+- A privacy manifest (`PrivacyInfo.xcprivacy`) that declares required-reason APIs. Third-party
+  SDKs need their own manifests, which recent versions ship.
+- The app works on the devices it claims to support, including iPad if iPad is enabled. An
+  iPhone-only layout running on iPad is a common rejection.
+
+Then add the checks from `references/app-types.md` for each type that applies, for example account
+deletion and Sign in with Apple for apps with logins, or report and block for apps with
+user-generated content.
 
 ### Phase 1: Apple Developer account (user only)
 
-- Enrolment costs USD 99 a year. Individual accounts show the person's name as the seller.
-  Organisation accounts need a D-U-N-S number.
+- Enrolment costs USD 99 a year (free for some non-profits and schools). Individual accounts show
+  the person's name as the seller. Organisation accounts show the company name and need a D-U-N-S
+  number.
 - In App Store Connect, look for banners. An updated licence agreement that hasn't been accepted
-  blocks new submissions, and only the Account Holder can accept it. The EU Digital Services Act
-  trader status is needed to sell in the EU.
+  blocks new submissions, and only the Account Holder can accept it. EU Digital Services Act trader
+  status is needed to distribute in the EU.
+- Selling anything needs the Paid Apps agreement, plus bank and tax details, under Business.
 - The team ID is shown at the top right of developer.apple.com/account/resources. It's 10
   characters and needed for signing.
 
@@ -83,75 +109,97 @@ Check the code before any forms. Apple rejects apps for these more often than fo
 
 developer.apple.com → Certificates, Identifiers & Profiles → Identifiers → (+) → App IDs → App.
 
-- Choose Explicit. Paste the bundle ID from the project config. Look in `tauri.conf.json`
-  `identifier`, the Xcode target, `app.json` (Expo), or the Flutter iOS project.
+- Choose Explicit and paste the bundle ID from the project. `references/stacks.md` says where each
+  stack keeps it.
 - The description can be the display name. It can't contain special characters.
-- Only enable capabilities the app uses. Most can be added later.
+- Enable the capabilities the app uses, such as Sign in with Apple, Push Notifications, iCloud,
+  App Groups or HealthKit. More can be added later, but provisioning profiles must be regenerated.
+- Xcode's automatic signing can register the ID for you. Registering it by hand first avoids
+  surprises with the name Xcode picks.
 - The New App form's Bundle ID dropdown stays empty until this is done.
 
 ### Phase 3: Create the app record and fill in the listing
 
 appstoreconnect.apple.com → Apps → (+) New App. Then:
 
-1. New App form: platforms, name (30 characters), primary language, bundle ID, SKU, user access
-   (Full Access is fine for a solo developer).
-2. App Information: subtitle (30 characters), primary category (and an optional secondary),
-   content rights, age rating questionnaire.
-3. App Privacy: Data Collection questions, then the privacy policy URL, then Publish.
-4. Pricing and Availability: price tier and countries.
-5. Version page (1.0 Prepare for Submission): description, keywords (100 characters,
-   comma-separated, no spaces needed), support URL, marketing URL, screenshots, review notes,
-   contact details, and the build.
-
-`references/app-store-connect.md` has the questionnaire walkthrough and the form quirks.
+1. New App form: platforms, name, primary language, bundle ID, SKU, user access.
+2. App Information: subtitle, primary and optional secondary category, content rights, age rating
+   questionnaire.
+3. App Privacy: data collection answers, privacy policy URL, then Publish.
+4. Pricing and Availability: price, countries, and distribution method (public or unlisted).
+5. In-app purchases and subscriptions, if any. Create the products before submitting, and attach
+   them to the first version that uses them.
+6. Version page: screenshots, description, keywords, support URL, review notes, contact details,
+   and the build.
 
 ### Phase 4: Privacy policy
 
 Every app needs a public privacy policy URL, including apps that collect nothing. Read
-`references/privacy-policy.md` for a template and three hosting options. The quickest free option
-is a separate public GitHub repo with GitHub Pages. Pages doesn't work on a private repo with a
-free account.
+`references/privacy-policy.md` for what it must cover and how to host it.
 
 ### Phase 5: Signing and upload
 
-- Set the team ID in the project. Tauri uses `bundle > iOS > developmentTeam` or the
-  `APPLE_DEVELOPMENT_TEAM` environment variable. Native Xcode uses Signing & Capabilities → Team.
-- iOS: in Xcode, Product → Archive, then Distribute App → App Store Connect. Or upload with
-  Transporter or `xcrun altool`.
-- Mac App Store: use an Apple Distribution certificate, a Mac App Store provisioning profile and
-  the App Sandbox entitlement. Build a signed `.pkg` with
-  `productbuild --sign "3rd Party Mac Developer Installer: …"`, then upload with Transporter.
+The details depend on the stack (see `references/stacks.md`). Common to all:
+
+- iOS needs an Apple Distribution certificate and an App Store provisioning profile. Xcode's
+  automatic signing creates both. Running `security find-identity -v -p codesigning` and getting
+  "0 valid identities" means nothing is set up on this Mac yet.
+- The Mac App Store needs the App Sandbox entitlement, a Mac App Store provisioning profile, and a
+  `.pkg` signed with a "3rd Party Mac Developer Installer" (Mac Installer Distribution) certificate.
+- Each upload needs a higher build number than the last one for that version.
 - After upload, the build takes 5 to 30 minutes to process before it appears in TestFlight.
-- TestFlight internal testers (up to 100 people on the team) need no review. External testers
-  need a short beta review.
-- `security find-identity -v -p codesigning` reporting "0 valid identities" means signing hasn't
-  been set up on this Mac.
+- TestFlight internal testers (up to 100 people on the team) need no review. External testers (up
+  to 10,000, by email or public link) need a short beta review of the first build, and the
+  TestFlight Test Information page filled in first: a beta app description, a feedback email, and
+  "What to Test" notes. Answer the export compliance question if the build asks.
 
-### Phase 6: Submit
+### Phase 6: Submit and release
 
-- Test the exact store build on a real device first. Check permissions, first launch with no
-  network, and anything sandboxed on macOS.
-- Review notes should explain anything a reviewer might get stuck on, such as a parental gate,
-  a login (give a demo account), or hardware the app needs.
-- Review usually takes 1 to 3 days. The most common rejections are crashes, placeholder content,
-  broken links, missing purchase restore, metadata that doesn't match the app, and privacy answers
-  that don't match the app's behaviour.
+- Test the exact store build from TestFlight on a real device. Check permissions, first launch
+  with no network and an empty account, purchases in the sandbox, and anything sandboxed on macOS.
+- Review notes should explain anything a reviewer might get stuck on: a demo account, a parental
+  gate, hardware or a location the app needs, or features behind a paywall.
+- Choose how to release: manual, automatic on approval, or scheduled. Phased release spreads an
+  automatic update over 7 days and can be paused.
+- Review usually takes 1 to 3 days. The most common rejections are crashes, incomplete content,
+  missing account deletion, missing purchase restore, misleading metadata, and privacy answers that
+  don't match the app. If a rejection comes in, help the user fix the cause. Writing the reply
+  itself is outside this skill.
 
-## Monetisation questions
+## Releasing an update
 
-First-timers often ask whether to charge from day one. Usual advice:
+For an app that's already live:
 
-- Ship 1.0 free to get reviews and real usage, then add a subscription or in-app purchase in an
-  update. Charging needs the Paid Apps agreement, bank and tax details, and StoreKit code, and each
-  of these can delay the first release.
-- Subscriptions need a Restore Purchases button and clear terms (guideline 3.1.2).
-- The Kids category allows purchases behind a parental gate. It rules out third-party ads and
-  analytics.
+1. Bump the version (`CFBundleShortVersionString`) and the build number.
+2. In App Store Connect, add a new version (+ next to the platform name), fill in "What's New in
+   This Version", and update screenshots if the UI changed.
+3. Re-check App Privacy and the age rating if the update adds SDKs, accounts, ads, chat, web
+   content or AI features. These don't update themselves.
+4. Upload, attach the build, submit, and choose a release option. Use phased release for large
+   changes.
+5. Promotional text can be changed at any time without a new version. The description, keywords
+   and screenshots need one.
+
+## Monetisation
+
+People often ask whether to charge from day one. Unless the user has a reason to charge now:
+
+- A free 1.0 gets reviews and real usage data sooner. A subscription or in-app purchase can be
+  added in an update. Charging needs the Paid Apps agreement, bank and tax details, product setup
+  and StoreKit code, and each of these can delay the first release.
+- Digital goods and features unlocked inside the app must use Apple's in-app purchase. Physical
+  goods and real-world services use other payment methods. The rules for linking to outside
+  payment differ by country and change often, so check the current guideline 3.1 before
+  advising on them.
+- Subscriptions need a Restore Purchases button, clear price and terms on the paywall, and links
+  to the terms of use and privacy policy (guideline 3.1.2).
+- The Small Business Program lowers Apple's commission to 15% for developers under USD 1 million a
+  year. Enrol under Business in App Store Connect.
 - Don't release free and later switch to a paid upfront price.
 
 ## Keep a record
 
 At the end of each session, write down what was done so the next session doesn't have to work it
 out again. Record the app's Apple ID, team ID, bundle ID, SKU, the Made for Kids decision, the
-privacy policy URL, and which phase each platform has reached. Write it in the repo's launch notes,
-or in memory if the user keeps project memory.
+privacy policy URL, the current version, and which phase each platform has reached. Write it in the
+repo's launch notes, or in memory if the user keeps project memory.

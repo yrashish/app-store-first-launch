@@ -33,7 +33,7 @@ Apps → (+) or "Add Apps".
 |---|---|
 | Platforms | Tick each platform the record should cover (iOS, macOS, tvOS, visionOS). Other platforms can be added later with "Add Platform". |
 | Name | 30 characters. Must be unique on the store. "Name: Short description" style is common and helps search. |
-| Primary Language | English (U.S.) is the usual default. Pick English (U.K.) if the copy uses British spelling and the main market is the UK. |
+| Primary Language | The language the listing is written in, for the main market. Other localisations can be added later. |
 | Bundle ID | Empty until the App ID is registered on developer.apple.com. |
 | SKU | Internal, permanent and never shown publicly. Use a slug like `appname`. |
 | User Access | Full Access for a solo developer. Limited Access hides the app from some team members. |
@@ -45,8 +45,8 @@ app's Apple ID (`/apps/<10 digits>/`). Record it.
 
 `/apps/<id>/distribution/info`
 
-- **Subtitle**: 30 characters. It's indexed for search, so put the key search term here
-  ("maths", "times tables", "budget").
+- **Subtitle**: 30 characters. It's indexed for search, so put the main search term for what the
+  app does here, such as "budget planner", "habit tracker" or "language flashcards".
 - **Category**: primary is required, secondary is optional. Games and Stickers have subcategories.
 - **Content Rights**: asks whether the app shows third-party content. Set it up before submitting.
 - **Age Ratings**: "Set Up Age Ratings" opens the 7-step questionnaire (next section).
@@ -54,8 +54,8 @@ app's Apple ID (`/apps/<10 digits>/`). Record it.
 
 ## 4. Age rating questionnaire
 
-Seven steps. For a typical educational or utility app with no web views, chat or user content,
-every answer is No or None, and the result is 4+.
+Seven steps. An app with no web views, chat, user content, ads or mature themes usually answers
+No or None throughout, and the result is 4+.
 
 1. **Features**: In-App Controls (Parental Controls, Age Assurance) and Capabilities
    (Unrestricted Web Access, User-Generated Content, Social Media, Messaging and Chat,
@@ -64,8 +64,7 @@ every answer is No or None, and the result is 4+.
 2. **Mature Themes**: profanity, horror, alcohol, tobacco and drugs. None, Infrequent or Frequent.
 3. **Medical or Wellness**.
 4. **Sexuality or Nudity**.
-5. **Violence**: cartoon violence counts. A game where a character gets bonked may be
-   "Infrequent cartoon violence".
+5. **Violence**: cartoon and fantasy violence count, including mild slapstick in a game.
 6. **Chance-Based Activities**: gambling, simulated gambling, contests, loot boxes.
 7. **Additional Information**: shows the calculated rating, then Age Categories and Override:
    - Not Applicable: the usual choice.
@@ -96,9 +95,9 @@ checks the questionnaire against the app.
 
 `/apps/<id>/distribution/ios/version/inflight` (or `macos`).
 
-- **Screenshots**: required sizes change. Currently that means the 6.9" iPhone, 13" iPad (if the
-  app supports iPad), and a Mac size for macOS. Screenshots must show the app in use, not only
-  marketing art.
+- **Screenshots**: required sizes change. As of October 2026 that means the 6.9" iPhone, 13" iPad
+  (if the app supports iPad), and a Mac size for macOS. Apple's upload page lists the current
+  ones. Screenshots must show the app in use, not only marketing art.
 - **Promotional text** (170 characters) can be changed without a new version.
 - **Description** (4000 characters) and **Keywords** (100 characters, comma-separated) need a new
   version to change.
@@ -106,4 +105,5 @@ checks the questionnaire against the app.
 - **Build**: shows up after an upload finishes processing.
 - **App Review Information**: contact name, phone and email, a demo account if the app has a
   login, and notes.
-- **Version Release**: manual or automatic after approval.
+- **Version Release**: manual, automatic after approval, or scheduled for a date. Phased release
+  (for updates) is set here too.
