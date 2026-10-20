@@ -96,14 +96,18 @@ checks the questionnaire against the app.
 `/apps/<id>/distribution/ios/version/inflight` (or `macos`).
 
 - **Screenshots**: required sizes change. As of October 2026 that means the 6.9" iPhone, 13" iPad
-  (if the app supports iPad), and a Mac size for macOS. Apple's upload page lists the current
-  ones. Screenshots must show the app in use, not only marketing art.
+  (if the app supports iPad), and a Mac size for macOS. The default iPhone slot ("Dynamic Island
+  medium display") takes 1206×2622 and rejects 1320×2868 files, so scale them for it. Screenshot
+  changes save without the Save button. Order, captions, checks and upload steps are in
+  `screenshots.md`.
 - **Promotional text** (170 characters) can be changed without a new version.
 - **Description** (4000 characters) and **Keywords** (100 characters, comma-separated) need a new
   version to change.
 - **Support URL** is required. **Marketing URL** is optional.
-- **Build**: shows up after an upload finishes processing.
+- **Build**: shows up after an upload finishes processing. To swap builds, hover the build row
+  and click the − at its right end, then "Add Build", pick the new one, Done, and Save.
 - **App Review Information**: contact name, phone and email, a demo account if the app has a
-  login, and notes.
+  login, and notes. Edits to the notes don't save until the contact fields are filled in; the
+  contact is the user's personal data, so leave it to them.
 - **Version Release**: manual, automatic after approval, or scheduled for a date. Phased release
   (for updates) is set here too.

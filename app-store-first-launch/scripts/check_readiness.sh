@@ -52,6 +52,25 @@ find . \( -name 'Info.plist' -o -name '*.xcprivacy' \) -not -path '*/node_module
 done
 
 echo
+echo "== Mac sandbox entitlements =="
+ents=$(find . \( -name '*.entitlements' -o -name 'Entitlements*.plist' \) -not -path '*/node_modules/*' -not -path '*/build/*' -not -path '*/target/*' -not -path '*/Pods/*' 2>/dev/null | head -5)
+if [ -z "$ents" ]; then
+  echo "none found (needed only for the Mac App Store)"
+else
+  echo "$ents" | while read -r f; do
+    keys=$(grep -oE 'com\.apple\.security\.[a-z.-]+' "$f" | sed 's/com.apple.security.//' | sort -u | tr '\n' ' ')
+    echo "$f: ${keys:-no sandbox keys}"
+    if echo "$keys" | grep -q 'app-sandbox' && ! echo "$keys" | grep -q 'network.client'; then
+      { case "$stack" in *tauri*|*capacitor*) true ;; *) grep -rqs 'WKWebView' --include='*.swift' --include='*.m' --exclude-dir=node_modules --exclude-dir=Pods . ;; esac; } \
+        && echo "  warning: sandboxed web view without network.client; WKWebView shows a black window"
+    fi
+  done
+fi
+case "$PWD" in
+  "$HOME/Desktop"*|"$HOME/Documents"*) echo "Project is under Desktop or Documents: if iCloud syncs them, codesign may fail with 'detritus not allowed'; run xattr -cr on the .app before signing" ;;
+esac
+
+echo
 echo "== SDKs and calls that need App Privacy declarations =="
 grep -noiE '(firebase|crashlytics|google-mobile-ads|admob|facebook|fbsdk|amplitude|mixpanel|segment|sentry|appsflyer|adjust|onesignal|revenuecat|posthog|datadog|bugsnag|branch)[a-z_./-]*' \
   package.json pubspec.yaml Podfile Package.resolved ios/Podfile src-tauri/Cargo.toml build.gradle 2>/dev/null | sort -u | head -15
@@ -84,6 +103,19 @@ for f in PRIVACY.md privacy.md docs/privacy.md; do
     break  # macOS is case-insensitive: PRIVACY.md and privacy.md are the same file
   fi
 done
+
+echo
+echo "== Screenshots =="
+shots=$(find . \( -path '*screenshot*' -o -path '*Screenshot*' \) \( -name '*.png' -o -name '*.jpg' \) -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null)
+if [ -z "$shots" ]; then
+  echo "none found in the repo"
+else
+  echo "$shots" | sed 's|/[^/]*$||' | sort | uniq -c | sed 's/^ */  /'
+  if command -v sips >/dev/null; then
+    n=$(echo "$shots" | while read -r f; do sips -g hasAlpha "$f" 2>/dev/null | grep -q 'hasAlpha: yes' && echo x; done | wc -l | tr -d ' ')
+    [ "$n" != 0 ] && echo "  $n files have an alpha channel; App Store screenshots must not (scripts/check_screenshots.py has details)"
+  fi
+fi
 
 echo
 echo "== Launch notes =="

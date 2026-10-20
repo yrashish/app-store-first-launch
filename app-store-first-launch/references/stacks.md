@@ -45,9 +45,19 @@ fails.
   of the same version is rejected. Set `bundleVersion` and raise it on every upload.
 - iOS team: `bundle > iOS > developmentTeam` or the `APPLE_DEVELOPMENT_TEAM` environment variable.
   Build with `npx tauri ios build`, which generates an Xcode project in `src-tauri/gen/apple`.
-- Mac App Store: a separate config with sandbox entitlements and an `.app` target. Sign with Apple
-  Distribution, then `productbuild --sign "3rd Party Mac Developer Installer: …" --component
-  <App>.app /Applications <App>.pkg`, and upload with Transporter.
+- iOS upload: `npx tauri ios build --export-method app-store-connect` makes the archive; then
+  `xcodebuild -exportArchive` with `destination` `upload` (see "Uploading without a local
+  distribution certificate" below).
+- Mac App Store: a separate config (for example `tauri.appstore.conf.json`, merged with
+  `--config`) with sandbox entitlements, `bundle > targets: ["app"]`, and its own
+  `bundle > macOS > bundleVersion`. iOS and macOS build numbers are separate; raise each one for
+  each upload to that platform. Build universal with `--target universal-apple-darwin`.
+- Sandboxed WKWebView needs `com.apple.security.network.client` even if the app makes no network
+  requests. Without it WebKit's network process crashes at launch and the window stays black.
+  Add `com.apple.security.device.audio-input` for the microphone.
+- With an installer certificate: sign with Apple Distribution, then `productbuild --sign "3rd
+  Party Mac Developer Installer: …" --component <App>.app /Applications <App>.pkg`, and upload
+  with Transporter. Without one, see below.
 
 ## Unity
 
@@ -68,6 +78,49 @@ fails.
   `dotnet publish -f net*-ios -c Release`, which needs signing properties set, then upload the
   `.ipa`.
 - Kotlin Multiplatform: the iOS app is an Xcode project in `iosApp/`. Treat it as native Xcode.
+
+## Uploading without a local distribution certificate
+
+`xcodebuild -exportArchive` can sign with Apple's cloud-managed certificates and upload in one
+step, so the Mac needs only an Xcode sign-in to the team (Xcode → Settings → Accounts). This works
+for iOS and for Mac apps built outside Xcode.
+
+`ExportOptions.plist`:
+
+```xml
+<dict>
+  <key>method</key><string>app-store-connect</string>
+  <key>destination</key><string>upload</string>
+  <key>teamID</key><string>YOURTEAMID</string>
+  <key>signingStyle</key><string>automatic</string>
+</dict>
+```
+
+```bash
+xcodebuild -exportArchive -archivePath App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath export -allowProvisioningUpdates
+```
+
+For a Mac `.app` built by another tool (Tauri, Electron, Flutter), make the archive by hand:
+
+```
+App.xcarchive/
+├── Info.plist                       ApplicationProperties: ApplicationPath (Applications/App.app),
+│                                    CFBundleIdentifier, CFBundleShortVersionString, CFBundleVersion,
+│                                    SigningIdentity (-), Architectures; ArchiveVersion 2; Name
+└── Products/Applications/App.app    ad-hoc signed with the App Store entitlements
+```
+
+- Sign the app ad hoc with the sandbox entitlements first: `codesign --force -s - --entitlements
+  Entitlements.plist App.app`. Export re-signs it for distribution and keeps the entitlements.
+- "resource fork, Finder information, or similar detritus not allowed" from codesign means the
+  bundle has extended attributes, usually because the project is in an iCloud-synced Desktop or
+  Documents folder. Run `xattr -cr App.app` and sign again. Copying the app (`ditto`, `cp`) can
+  bring them back, so clean and sign the copy inside the archive, then `codesign --verify --deep
+  --strict` it.
+- "No Accounts" or "Invalid credentials in keychain" from `-exportArchive`: sign in to Xcode again
+  under Settings → Accounts.
+- The warning "Upload Symbols Failed … did not include a dSYM" means crash reports won't be
+  symbolicated. The upload still succeeds. Put the dSYM in `App.xcarchive/dSYMs/` to fix it.
 
 ## Any stack: version and build numbers
 

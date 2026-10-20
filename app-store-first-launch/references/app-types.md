@@ -71,6 +71,14 @@ This applies whether or not the app joins the Kids category.
 - Made for Kids is permanent. See the table in SKILL.md before choosing it. The age band must be
   one of 5 and under, 6–8 or 9–11.
 - Metadata may say "for kids" only if the app is in the Kids category (2.3.8).
+- A way for the parent to delete a child's data in the app, behind the gate, that works for every
+  profile including the last one. Test it with one profile and with several. App Review may ask
+  how data is deleted.
+- A Kids submission can come back "Rejected" under 2.1 with questions about guideline 1.3
+  (analytics, ads, data sharing, other collection). It is a request for answers. See
+  `app-review.md`, section 3.
+- Ages shown in the app, screenshots and description must agree with the Kids age band. Leaving
+  the number out is simplest.
 
 ## Apps with user-generated content or chat
 
@@ -152,6 +160,14 @@ scrutiny.
   that works unsandboxed may fail.
 - Mac apps can't install kernel extensions, ask for root, or download and run code outside the
   bundle.
+- Apps that render with WKWebView (Tauri, Capacitor-style shells, native apps with a web view)
+  need `com.apple.security.network.client` in the sandbox, or the web view's network process
+  crashes and the window stays black, even for apps that make no requests.
+- Moving a sandboxed app to the Trash leaves its data in
+  `~/Library/Containers/<bundle ID>`. If the app or privacy policy says deleting the app deletes
+  the data, that is true on iOS but not on macOS; say how to delete the container folder.
+- TestFlight on a Mac asks for a redeem code when the Mac App Store is signed in with an Apple ID
+  that isn't a tester. Add that Apple ID as a tester, or sign in with the tester's.
 - If the Mac App Store is too limiting, Developer ID signing with notarisation and distribution from
   your own website is the alternative. That's outside this skill's scope.
 

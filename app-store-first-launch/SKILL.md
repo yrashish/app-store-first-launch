@@ -1,6 +1,6 @@
 ---
 name: app-store-first-launch
-description: Guide a developer through getting any app onto Apple's App Store or TestFlight with App Store Connect, from a first-ever launch to a new app or platform from an experienced team, and through later version updates. Works out which rules apply to the app (accounts and backends, subscriptions, games, children, user-generated content, AI features, regulated fields like health or finance) and to the stack (Xcode, Flutter, React Native/Expo, Capacitor, Tauri, Unity, Electron). Covers readiness checks, bundle ID, the app record, listing limits, age rating and Made for Kids, App Privacy labels, privacy policy hosting, signing, upload, review, phased release and when to charge. Use it whenever someone wants to publish, submit, ship or update an iOS, iPadOS or macOS app, asks where their App Store launch stands, or is filling in App Store Connect. Not for fastlane or CI automation, crash debugging, StoreKit or feature code, replying to a rejection, or Google Play.
+description: Guide a developer through getting any app onto Apple's App Store or TestFlight with App Store Connect, from a first launch to a new app or platform, through App Review, and through later updates. Works out which rules apply to the app (accounts, subscriptions, games, children, user-generated content, AI, regulated fields) and the stack (Xcode, Flutter, React Native/Expo, Capacitor, Tauri, Unity, Electron). Covers readiness, bundle ID, the app record, listing limits, designing and checking store screenshots, age rating and Made for Kids, App Privacy, privacy policy, signing, upload, Mac sandbox problems (such as a store build opening to a black window), App Review questions, rejections and resubmitting, and when to charge. Use it whenever someone wants to publish, submit, resubmit or update an iOS, iPadOS or macOS app, asks where their launch stands, or is filling in App Store Connect. Not for fastlane or CI, crash logs, StoreKit or feature code, keyword research, or Google Play.
 ---
 
 # App Store launch
@@ -30,6 +30,10 @@ what is already done, and explain each choice before the user makes it.
 - **Check limits before you type.** The name and subtitle are 30 characters each, keywords are
   100, and promotional text is 170. Count before entering. If the text is too long, offer a version
   that fits.
+- **Test every claim before it goes to Apple.** Review notes, privacy answers, replies to App
+  Review and screenshot captions must be true of the build being reviewed. If a claim depends on
+  a feature (deleting data, a parental gate, offline use), try it on that build first, including
+  edge cases such as the last remaining profile.
 - **Trust the screen over these notes.** Apple changes forms and guidelines. Prices, limits,
   screenshot sizes and guideline numbers here were checked in October 2026. If a page or a current
   guideline disagrees with this skill, follow Apple and tell the user.
@@ -130,7 +134,8 @@ appstoreconnect.apple.com → Apps → (+) New App. Then:
 5. In-app purchases and subscriptions, if any. Create the products before submitting, and attach
    them to the first version that uses them.
 6. Version page: screenshots, description, keywords, support URL, review notes, contact details,
-   and the build.
+   and the build. For screenshots (which ones go first, captions, sizes, checks, upload), read
+   `references/screenshots.md`.
 
 ### Phase 4: Privacy policy
 
@@ -146,6 +151,9 @@ The details depend on the stack (see `references/stacks.md`). Common to all:
   "0 valid identities" means nothing is set up on this Mac yet.
 - The Mac App Store needs the App Sandbox entitlement, a Mac App Store provisioning profile, and a
   `.pkg` signed with a "3rd Party Mac Developer Installer" (Mac Installer Distribution) certificate.
+  Without those certificates on the Mac, `xcodebuild -exportArchive` with destination `upload` can
+  sign with cloud-managed certificates and upload, for iOS and for Mac apps built outside Xcode.
+  See "Uploading without a local distribution certificate" in `references/stacks.md`.
 - Each upload needs a higher build number than the last one for that version.
 - After upload, the build takes 5 to 30 minutes to process before it appears in TestFlight.
 - TestFlight internal testers (up to 100 people on the team) need no review. External testers (up
@@ -163,8 +171,14 @@ The details depend on the stack (see `references/stacks.md`). Common to all:
   automatic update over 7 days and can be paused.
 - Review usually takes 1 to 3 days. The most common rejections are crashes, incomplete content,
   missing account deletion, missing purchase restore, misleading metadata, and privacy answers that
-  don't match the app. If a rejection comes in, help the user fix the cause. Writing the reply
-  itself is outside this skill.
+  don't match the app.
+- When review comes back with a rejection or a question, read `references/app-review.md`. Some
+  "rejections" are questions (a Kids Category app often gets one about guideline 1.3). Fix the
+  cause, test the claims in the reply on the build that will be reviewed, draft the reply, and
+  let the user send it and resubmit. Sending messages to Apple and submitting are the user's
+  actions; get a clear yes before doing either from a browser session.
+- If the app is on more than one platform, check whether a fix for one belongs in the other's
+  build too before submitting it.
 
 ## Releasing an update
 
@@ -201,5 +215,6 @@ People often ask whether to charge from day one. Unless the user has a reason to
 
 At the end of each session, write down what was done so the next session doesn't have to work it
 out again. Record the app's Apple ID, team ID, bundle ID, SKU, the Made for Kids decision, the
-privacy policy URL, the current version, and which phase each platform has reached. Write it in the
+privacy policy URL, the current version and build number per platform, which phase each platform
+has reached, and any open App Review thread. Write it in the
 repo's launch notes, or in memory if the user keeps project memory.
